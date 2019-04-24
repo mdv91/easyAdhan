@@ -6,11 +6,12 @@
  * @type {{csv}|*}
  */
 const csvService = require('./csv');
-const xlsx = require('xlsx');
+var fs = require('fs');
+var XLSX = require('xlsx');
 
 /**
  *
- * @type {{asr: number, icha: number, imsak: number, maghreb: number, dohr: number, fajr: number, churuq: number}}
+ * @type {{asr: number, isha: number, imsak: number, maghreb: number, dohr: number, fajr: number, churuq: number}}
  */
 const salat = {
     imsak: 2,
@@ -19,8 +20,16 @@ const salat = {
     dohr: 5,
     asr: 6,
     maghreb: 7,
-    icha: 8
+    isha: 8
 };
+
+const salatString = [];
+salatString[3] = 'fajr';
+salatString[5] = 'dhor';
+salatString[6] = 'asr';
+salatString[7] = 'maghreb';
+salatString[8] = 'isha';
+
 
 /**
  *
@@ -55,9 +64,13 @@ Mdv91Adhan = class Adhan {
      * Load all datas From xlsx file - parse & store month salat only
      */
     loadDataFromCsvFile() {
-        let workbook = xlsx.readFile('horaires.xlsx');
+
+        let data = fs.readFileSync('horaires.xlsx', 'base64');
+        let workbook = XLSX.read(data,{type:"base64"});
+        //let workbook = XLSX.readFile('horaires.xlsx');
         let sheet_name_list = workbook.SheetNames;
-        let monthData = xlsx.utils.sheet_to_csv(workbook.Sheets[sheet_name_list[this.month]]);
+        let monthData = XLSX.utils.sheet_to_csv(workbook.Sheets[sheet_name_list[this.month]]);
+
         this.monthData = csvService.csv(monthData, ',');
     }
 
@@ -67,7 +80,7 @@ Mdv91Adhan = class Adhan {
      */
     initProperties() {
         this.refreshDatetime();
-        this.nextSalatIndex = 0;
+        this.nextSalatIndex = salat.isha; // @TODO add next day if current time is greater than isha
         this.monthData = '';
         this.imsak = '';
         this.fajr = '';
@@ -75,7 +88,7 @@ Mdv91Adhan = class Adhan {
         this.dohr = '';
         this.asr = '';
         this.maghreb = '';
-        this.icha = '';
+        this.isha = '';
     }
 
 
@@ -104,9 +117,10 @@ Mdv91Adhan = class Adhan {
                 this.dohr = this.monthData[i][salat.dohr];
                 this.asr = this.monthData[i][salat.asr];
                 this.maghreb = this.monthData[i][salat.maghreb];
-                this.icha = this.monthData[i][salat.icha];
+                this.isha = this.monthData[i][salat.isha];
             }
         }
+        this.getNextSalat();
     }
 
 
@@ -121,7 +135,7 @@ Mdv91Adhan = class Adhan {
         let dohrCnf = this.dohr.split(/:|h/);
         let asrCnf = this.asr.split(/:|h/);
         let maghrebCnf = this.maghreb.split(/:|h/);
-        let ichaCnf = this.icha.split(/:|h/);
+        let ishaCnf = this.isha.split(/:|h/);
 
         var allDates = [
             [IGNORING, 'header'],
@@ -132,7 +146,7 @@ Mdv91Adhan = class Adhan {
             [ dohrCnf[HOUR], dohrCnf[MIN], 'dohr' ],
             [ asrCnf[HOUR], asrCnf[MIN], 'asr' ],
             [ maghrebCnf[HOUR], maghrebCnf[MIN], 'maghreb' ],
-            [ ichaCnf[HOUR], ichaCnf[MIN], 'icha' ]
+            [ ishaCnf[HOUR], ishaCnf[MIN], 'isha' ]
         ];
         for (var i = 0; allDates[i]; i++) {
             if (allDates[i][HOUR] !== IGNORING) {
@@ -154,26 +168,32 @@ Mdv91Adhan = class Adhan {
         return allDates[this.nextSalatIndex];
     }
 
-    /**
-     * Get Salat of the day
-     *
-     * @returns {string}
-     */
-    getTodaySalat() {
-        const nextSalatIndex = this.nextSalatIndex;
-        var html = "var newHTML = document.createElement('div'); " +
-            "newHTML.innerHTML = '<div id=gmSomeID>" +
-            "<ul><li>Imsak: " + this.imsak + (nextSalatIndex === salat.imsak ? ' OK ' : '') + "</li>" +
-            "<li>fajr: " + this.fajr + (nextSalatIndex === salat.fajr ? ' OK ' : '')  + "</li>" +
-            "<li>chouruq: " + this.chouruq + (nextSalatIndex === salat.chouruq? ' OK ' : '')  + "</li>" +
-            "<li>dohr: " + this.dohr + (nextSalatIndex === salat.dohr ? ' OK ' : '') + "</li>" +
-            "<li>asr: " + this.asr + (nextSalatIndex === salat.asr ? ' OK ' : '') + "</li>" +
-            "<li>maghreb: " + this.maghreb + (nextSalatIndex === salat.maghreb ? ' OK ' : '') + "</li>" +
-            "<li>icha: " + this.icha + (nextSalatIndex === salat.icha ? ' OK ' : '') + "</li></ul> " +
-            "</div>'; " +
-            "document.body.prepend(newHTML);";
 
-        return html;
+    /**
+     * Print all salat of the day
+     */
+    printTodaySalat() {
+        var newHTML = "<div class=\"ontop\"><aside><figure><img class=\"logo\" src=\"img/logo-mosquee-vigneux.png\" alt=\"logo\" height=\"133px\" width=\"133px\" /></figure><div class=\"jumu3a\"><h3>Prière du vendredi</h3><h4>13:04</h4></div></aside>" +
+            "<nav><ul>" +
+            "<li class=\"hlune\" id=\"" + salatString[salat.fajr]+ "\"><h4>" + this.fajr +"</h4></li>" +
+            "<li class=\"hlune\" id=\"" + salatString[salat.dohr]+ "\"><h4>" + this.dohr +"</h4></li>" +
+            "<li class=\"hlune\" id=\"" + salatString[salat.asr]+ "\"><h4>" + this.asr +"</h4></li>" +
+            "<li class=\"hlune\" id=\"" + salatString[salat.maghreb]+ "\"><h4>" + this.maghreb +"</h4></li>" +
+            "<li class=\"hlune\" id=\"" + salatString[salat.isha]+ "\"><h4>" + this.isha +"</h4></li>" +
+            "</ul></nav></div>";
+        $('body').append(newHTML);
+    }
+
+
+
+
+    /**
+     * HightLight the next salat in white
+     */
+    highLightNextSalat() {
+        const nextSalatIndex = this.nextSalatIndex;
+        const nextSalat = salatString[nextSalatIndex];
+        $('#' + nextSalat).css('background-image', 'url(img/' + nextSalat + '-white.png)');
     }
 
 }
