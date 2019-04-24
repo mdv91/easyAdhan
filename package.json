@@ -1,0 +1,21 @@
+{
+  "name": "@mdv91/adhanontop",
+  "version": "0.5.1",
+  "description": "This package allows you to add prayer times on top of your website",
+  "main": "index.js",
+  "dependencies": {
+    "brfs": "^2.0.2",
+    "convert-csv-to-json": "^0.0.14",
+    "xlsx": "^0.14.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ben Younes Ousama",
+  "contributors": [
+    "Ben Younes Ousama <benyounes.ousama@gmail.com> (https://yellowlab.tools)",
+    "Djebbarri Smain <djebbari.smain@yahoo.fr> (http://smaindjebbari.fr)",
+    "Barkaoui Badr <barkaoui.badr@gmail.com>"
+  ],
+  "license": "ISC"
+}

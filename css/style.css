@@ -1,0 +1,102 @@
+*{
+	margin:0;
+	padding:0;
+}
+
+.ontop{
+	width:100%;
+	height:150px;
+	background-color:#000;
+		font-family:lato;
+	
+}
+
+aside{
+	display:flex;
+	float:left;
+}
+
+.logo{
+	width:133px;
+	height:133px;
+	padding:8px 0 0 20px;
+}
+
+aside h3{
+	color:#fff;
+	margin:20px 0 0 80px;
+	font-size:25px;
+
+
+}
+
+aside h4{
+	color:#fff;
+	margin:20px 0 0 70px;
+	font-size:35px;
+	font-family:lato;
+}
+
+.jumu3a{
+	text-align:center;
+}
+
+nav{
+	float:right;
+	    margin: 5px 12px 0 0;
+}
+
+nav ul{
+	display:flex;
+}
+
+nav ul li{
+	list-style: none;
+	padding:20px;
+}
+
+nav ul li h4{
+	padding: 40px 0 0 30px;
+    font-size: 25px;
+    color: #98C5AA;
+}
+
+nav ul .hlune {
+    width: 107px;
+    height: 111px;
+    list-style: none;
+    padding: 0 0 0 5px;
+    margin: 10px 0 0 50px;
+    color:#fff;
+}
+
+
+.hlune:nth-child(1n){
+	background:url('../img/fajr-green.png');
+}
+
+.hlune:nth-child(1n){
+	background:url('../img/fajr-green.png');
+}
+
+.hlune:nth-child(2n){
+	background:url('../img/dhor-green.png');
+}
+
+.hlune:nth-child(3n){
+	background:url('../img/asr-green.png');
+}
+
+.hlune:nth-child(4n){
+	background:url('../img/maghreb-green.png');
+}
+
+.hlune:nth-child(5n){
+	background:url('../img/isha-green.png');
+}
+
+
+
+
+
+
